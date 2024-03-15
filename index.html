@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<main>
+    <div class="contents">
+        <div class="inpWrap">
+            <input type="text" class="inpTxt" value=""><button class="inpBtn">오늘의 할일</button>
+        </div>
+        <div class="viewData">
+            <!-- <ul class="listWrap active">
+                <li>자바스크립트</li>
+                <li>
+                    <a href="#" class="btn active"><i class="fa-solid fa-check"></i></a>
+                    <a href="#" class="btn del"><i class="fa-solid fa-trash"></i></a>
+                </li>
+            </ul> -->
+        </div>
+        <div class="btnWrap"><a href="#" class="btnType">allClear</a></div>
+    </div>
+</main>
+<script>
+    // let btnDel =document.getElementsByClassName('del')[0];
+    let viewElm = document.querySelector(".viewData");
+    let btnElm = document.querySelector(".inpBtn");
+    let inpElm = document.querySelector(".inpTxt");
+
+    let listData = [];
+    
+    btnElm.addEventListener("click",function(){
+        if(inpElm.value !=""){
+            // console.log(inpElm,value);
+            let value = {title: inpElm.value, check: false};
+            listData.push(value);
+
+            //localsrage에 json
+            let valueData = JSON.stringify(listData)
+            console.log (valueData);
+            localStorage.setItem("todoData",valueData)
+
+            view();
+            inpElm.value ="";//input창 초기화
+        }else{
+            alert("오늘의 할일을 입력하세요"); //오류시 입력
+            inpElm.focuse();
+        }
+    })
+    function view(){
+        if(localStorage.length > 0){
+            let localData = localStorage.getItem("todoData")
+            console.log(JSON.parse(localData));
+            listData =  JSON.parse(localData)
+        }
+
+        text = "";
+        for (let i = 0; i < listData.length; i++) {
+            if(listData[i].check){
+                text += '<ul class="listWrap active">'
+            } else {
+                text += '<ul class="listWrap">'
+            }
+            text += '<li>' + listData[i].title + '</li>'
+            text += '<li>'
+            if(listData[i].check){
+                text += '<a href="#" class="btn active" onclick="check(' + i +')"><i class="fa-solid fa-check"></i></a>'
+            } else {
+                text += '<a href="#" class="btn" onclick="check(' + i +')"><i class="fa-solid fa-check"></i></a>'
+            }
+            text += '<a href="#" class="btn del" onclick="del('+ i +')"><i class="fa-solid fa-trash"></i></a></li></ul>'
+        }
+        viewElm.innerHTML = text;
+    }
+    view();
+
+    //삭제 이벤트
+    function del(idx){
+        listData.splice(idx,1)
+        alert(idx + "삭제")
+
+        //localsrage에 json
+        let valueData = JSON.stringify(listData)
+        console.log (valueData);
+        localStorage.setItem("todoData",valueData)
+
+        //리스트 다시 호출
+        view();
+    }
+
+    //체크 이벤트
+    function check(idx){
+        listData[idx].check = !listData[idx].check;
+
+        //localsrage에 json
+        let valueData = JSON.stringify(listData)
+        console.log (valueData);
+        localStorage.setItem("todoData",valueData)
+
+        //리스트 다시 호출
+        view();
+    }
+
+</script>
+</body>
+</html>
